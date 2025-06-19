@@ -1,0 +1,321 @@
+bash -v wordtest.sh
+module () {  local _mlredir=1;
+ if [ -n "${MODULES_REDIRECT_OUTPUT+x}" ]; then
+ if [ "$MODULES_REDIRECT_OUTPUT" = '0' ]; then
+ _mlredir=0;
+ else
+ if [ "$MODULES_REDIRECT_OUTPUT" = '1' ]; then
+ _mlredir=1;
+ fi;
+ fi;
+ fi;
+ case " $@ " in 
+ *' --no-redirect '*)
+ _mlredir=0
+ ;;
+ *' --redirect '*)
+ _mlredir=1
+ ;;
+ esac;
+ if [ $_mlredir -eq 0 ]; then
+ _module_raw "$@";
+ else
+ _module_raw "$@" 2>&1;
+ fi
+}
+ml () {  module ml "$@"
+}
+_module_raw () {  eval "$(/usr/bin/tclsh8.6 '/usr/lib/x86_64-linux-gnu/modulecmd.tcl' bash "$@")";
+ _mlstatus=$?;
+ return $_mlstatus
+}
+#!/bin/bash
+# 
+# testing.sh
+# Created by Arthur Ufongene 05/19/2025
+# File that runs a test for the word module
+
+# Invalid word test
+./wordDriver < testingFiles/invalid.txt // These are error messages from the word module itself
+Error: bad character '3' in query.
+
+Error: bad character '!' in query.
+
+Error: bad character '^' in query.
+
+Error: bad character '&' in query.
+
+Error: 'and' and 'or' cannot be adjacent.
+
+Error: 'and' and 'and' cannot be adjacent.
+
+Error: 'or' and 'or' cannot be adjacent.
+
+Error: 'or' and 'and' cannot be adjacent.
+
+Error: 'and' and 'or' cannot be adjacent.
+
+Error: 'and' cannot be first.
+
+Error: 'or' cannot be first.
+
+Error: 'and' cannot be first.
+
+Error: 'or' cannot be first.
+
+Error: 'and' cannot be first.
+
+Error: 'and' cannot be last.
+
+Error: 'or' cannot be last.
+
+Error: 'or' cannot be last.
+
+Error: 'and' cannot be last.
+
+Error: 'and' and 'or' cannot be adjacent.
+
+Error: 'and' and 'and' cannot be adjacent.
+
+
+Empty query: false        // actual testing
+
+
+Empty query: false
+
+h3llo
+false
+
+I am going to the mall!
+false
+
+there and ^here
+false
+
+let & go
+false
+
+
+Empty query: false
+
+Them and or us
+false
+
+we them and and all
+false
+
+cars or or trucks
+false
+
+The or and we can go
+false
+
+the best we can do and or not
+false
+
+
+Empty query: false
+
+and me 
+false
+
+or them
+false
+
+and or my trail
+false
+
+or or you could
+false
+
+and my fellow people
+false
+
+
+Empty query: false
+
+We are going to and
+false
+
+they are going to or
+false
+
+they are or
+false
+
+I like to go and
+false
+
+They are my best and or
+false
+
+They are my favorite and and
+false
+
+
+# Mix of invalid and valid
+./wordDriver < testingFiles/mix.txt           // Error messages from word module
+Error: 'and' cannot be last.
+
+Error: 'and' cannot be first.
+
+Error: 'or' and 'and' cannot be adjacent.
+
+Error: 'or' and 'and' cannot be adjacent.
+
+Error: 'or' and 'or' cannot be adjacent.
+
+Error: 'and' cannot be first.
+
+Error: 'or' cannot be first.
+
+Error: 'or' and 'and' cannot be adjacent.
+
+Error: 'or' cannot be last.
+
+Error: 'and' cannot be last.
+
+Error: 'and' and 'or' cannot be adjacent.
+
+Error: 'and' cannot be first.
+
+Error: 'or' and 'or' cannot be adjacent.
+
+Error: 'or' and 'and' cannot be adjacent.
+
+Error: 'or' and 'and' cannot be adjacent.
+
+Error: 'or' and 'and' cannot be adjacent.
+
+clung assert OR exhort AND fields            // actual testing
+true
+
+cataloguing musl AND
+false
+
+vendor 
+true
+
+AND antonakos predate AND behind OR century inclining OR automatic 
+false
+
+stories AND centuries routing Brown 
+true
+
+
+Empty query: false
+
+relied suomi OR AND square 
+false
+
+sportswomen kelsey OR AND melayu coal OR emblems AND subscriptions 
+false
+
+preemptive evaluate 
+true
+
+
+Empty query: false
+
+retrying AND donors 
+true
+
+smtp OR expertise AND iguana OR experimentation OR far 
+true
+
+nested OR OR lunged OR Georgians specifically 
+false
+
+AND finger pulitzer source OR Eco 
+false
+
+struct OR april 
+true
+
+OR lietuvi AND adherents jasper Montenegrin 
+false
+
+parallel 
+true
+
+berkeley mapping wgwikieditorenabledmodules 
+true
+
+steele southeast consistently sociocultural 
+true
+
+
+Empty query: false
+
+aims AND watchlisthideliu OR wasteful OR department 
+true
+
+items OR AND awk desktop saner OR shipment OR napkins 
+false
+
+belonged Steele OR outlets corns 
+true
+
+
+Empty query: false
+
+uncomfortable javascript editor permitting AND Tanzania role OR
+false
+
+telecommunication ingrates denoted 
+true
+
+Gorgonzola OR claimed offs dijkstra AND
+false
+
+fertilization OR impairment AND OR genome inbound OR sting OR
+false
+
+lack OR makes OR middlebrow OR quarterback 
+true
+
+ionizing OR let OR exists notion geotechnical 
+true
+
+AND calculation OR option Sculley OR init 
+false
+
+amend OR innovations 
+true
+
+francis OR justifying experienced vases OR OR summary hydraulic 
+false
+
+third assiduous OR simplest 
+true
+
+returned position sed OR AND recordings undercoated 
+false
+
+outdoor OR inconsistent trammed 
+true
+
+tangibles 
+true
+
+ssp 
+true
+
+maximum route binding OR AND sound 
+false
+
+Patricia AND painlessly 
+true
+
+parades OR AND late OR american 
+false
+
+tempers OR rclimit OR revitalization 
+true
+
+tinker largest 
+true
+
+came verlag marye fallowed 
+true
+

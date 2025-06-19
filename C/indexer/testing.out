@@ -1,0 +1,145 @@
+gcc -Wall -pedantic -std=c11 -ggdb -I../common -I../libcs50   -c -o indexer.o indexer.c
+make -C ../libcs50 libcs50.a
+make[1]: Entering directory '/thayerfs/home/f007hcb/cs50-dev/labs/lab4-arthUFO12/libcs50'
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o bag.o bag.c
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o counters.o counters.c
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o file.o file.c
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o hashtable.o hashtable.c
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o hash.o hash.c
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o mem.o mem.c
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o set.o set.c
+gcc -Wall -pedantic -std=c11 -ggdb    -c -o webpage.o webpage.c
+ar cr libcs50.a bag.o counters.o file.o hashtable.o hash.o mem.o set.o webpage.o
+make[1]: Leaving directory '/thayerfs/home/f007hcb/cs50-dev/labs/lab4-arthUFO12/libcs50'
+make -C ../common common.a
+make[1]: Entering directory '/thayerfs/home/f007hcb/cs50-dev/labs/lab4-arthUFO12/common'
+gcc -Wall -pedantic -std=c11 -ggdb -I../libcs50   -c -o pagedir.o pagedir.c
+gcc -Wall -pedantic -std=c11 -ggdb -I../libcs50   -c -o word.o word.c
+gcc -Wall -pedantic -std=c11 -ggdb -I../libcs50   -c -o index.o index.c
+ar cr common.a pagedir.o word.o index.o
+make[1]: Leaving directory '/thayerfs/home/f007hcb/cs50-dev/labs/lab4-arthUFO12/common'
+gcc -Wall -pedantic -std=c11 -ggdb -I../common -I../libcs50 indexer.o ../common/common.a ../libcs50/libcs50.a  -o indexer
+gcc -Wall -pedantic -std=c11 -ggdb -I../common -I../libcs50   -c -o indextest.o indextest.c
+gcc -Wall -pedantic -std=c11 -ggdb -I../common -I../libcs50 indextest.o ../common/common.a ../libcs50/libcs50.a  -o indextest
+bash -v testing.sh
+module () {  local _mlredir=1;
+ if [ -n "${MODULES_REDIRECT_OUTPUT+x}" ]; then
+ if [ "$MODULES_REDIRECT_OUTPUT" = '0' ]; then
+ _mlredir=0;
+ else
+ if [ "$MODULES_REDIRECT_OUTPUT" = '1' ]; then
+ _mlredir=1;
+ fi;
+ fi;
+ fi;
+ case " $@ " in 
+ *' --no-redirect '*)
+ _mlredir=0
+ ;;
+ *' --redirect '*)
+ _mlredir=1
+ ;;
+ esac;
+ if [ $_mlredir -eq 0 ]; then
+ _module_raw "$@";
+ else
+ _module_raw "$@" 2>&1;
+ fi
+}
+ml () {  module ml "$@"
+}
+_module_raw () {  eval "$(/usr/bin/tclsh8.6 '/usr/lib/x86_64-linux-gnu/modulecmd.tcl' bash "$@")";
+ _mlstatus=$?;
+ return $_mlstatus
+}
+#!/bin/bash
+# 
+# testing.sh
+# Created by Arthur Ufongene 05/10/2025
+# File that runs a test for the indexer module
+
+# Invalid arguments test
+
+# No args
+./indexer
+Incorrect number of arguments
+
+# One arg
+./indexer ../data/letters-depth-2
+Incorrect number of arguments
+
+# Three args
+./indexer ../data/letters-depth-2 ../data/letters-depth-2/letters.index ../data
+Incorrect number of arguments
+
+# Non-existent page directory
+./indexer ../data/beans ../data/letters-depth-2/letters.index
+Not a crawler directory
+
+# Not a crawler page directory
+./indexer ../data ../data/letters-depth-2/letters.index
+Not a crawler directory
+
+# Non-existent index file
+./indexer ../data/letters-depth-2 ../data/letters-depth-11/letters.index
+Couldn't open indexFile
+
+# Index file in read only directory 
+./indexer ../data/letters-depth-2 ../read_only/letters.index
+Couldn't open indexFile
+
+# Index file is read only
+./indexer ../data/letters-depth-2 ../data/letters-depth-2/files.index
+Couldn't open indexFile
+
+
+# Run tests on various page directories and validate using indextest
+./indexer ../data/letters-depth-2 ../data/letters-depth-2/letters.index
+./indextest ../data/letters-depth-2/letters.index ../data/letters-depth-2/letters.reindex
+
+./indexer ../data/letters-depth-10 ../data/letters-depth-10/letters.index
+./indextest ../data/letters-depth-10/letters.index ../data/letters-depth-10/letters.reindex
+
+./indexer ../data/toscrape-depth-1 ../data/toscrape-depth-1/toscrape.index
+./indextest ../data/toscrape-depth-1/toscrape.index ../data/toscrape-depth-1/toscrape.reindex
+
+./indexer ../data/wikipedia-depth-1 ../data/wikipedia-depth-1/wikipedia.index
+./indextest ../data/wikipedia-depth-1/wikipedia.index ../data/wikipedia-depth-1/wikipedia.reindex
+
+./indexer ../data/toscrape-depth-0 ../data/toscrape-depth-0/toscrape.index
+./indextest ../data/toscrape-depth-0/toscrape.index ../data/toscrape-depth-0/toscrape.reindex
+
+./indexer ../data/wikipedia-depth-0 ../data/wikipedia-depth-0/wikipedia.index
+./indextest ../data/wikipedia-depth-0/wikipedia.index ../data/wikipedia-depth-0/wikipedia.reindex
+
+# Valgrind test
+valgrind ./indexer ../data/toscrape-depth-1 ../data/toscrape-depth-1/toscrape.index
+==1943694== Memcheck, a memory error detector
+==1943694== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==1943694== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==1943694== Command: ./indexer ../data/toscrape-depth-1 ../data/toscrape-depth-1/toscrape.index
+==1943694== 
+==1943694== 
+==1943694== HEAP SUMMARY:
+==1943694==     in use at exit: 0 bytes in 0 blocks
+==1943694==   total heap usage: 2,422,185 allocs, 2,422,185 frees, 44,053,418,776 bytes allocated
+==1943694== 
+==1943694== All heap blocks were freed -- no leaks are possible
+==1943694== 
+==1943694== For lists of detected and suppressed errors, rerun with: -s
+==1943694== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+valgrind ./indextest ../data/toscrape-depth-1/toscrape.index ../data/toscrape-depth-1/toscrape.reindex
+==1944534== Memcheck, a memory error detector
+==1944534== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==1944534== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==1944534== Command: ./indextest ../data/toscrape-depth-1/toscrape.index ../data/toscrape-depth-1/toscrape.reindex
+==1944534== 
+==1944534== 
+==1944534== HEAP SUMMARY:
+==1944534==     in use at exit: 0 bytes in 0 blocks
+==1944534==   total heap usage: 25,505 allocs, 25,505 frees, 449,677 bytes allocated
+==1944534== 
+==1944534== All heap blocks were freed -- no leaks are possible
+==1944534== 
+==1944534== For lists of detected and suppressed errors, rerun with: -s
+==1944534== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
